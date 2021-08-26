@@ -18,7 +18,7 @@ public class WordSearchController {
     @GetMapping("/wordgrid")
     public String createWordGrid(@RequestParam int gridSize, @RequestParam String wordList) {
 
-        List<String> words = Arrays.asList(wordList.split("-"));
+        List<String> words = Arrays.asList(wordList.split(","));
 
         char[][] grid = wordGridService.fillGrid(gridSize, words);
         String gridToString = "";
