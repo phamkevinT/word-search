@@ -62,7 +62,7 @@ public class Grid {
                 int y = coordinate.y;
 
                 // Checking if the word fits in grid
-                if (y + word.length() < gridSize) {
+                if (doesFit(word, coordinate)) {
                     // Convert word to charArray and for each character insert into grid
                     for (char c : word.toCharArray()) {
                         contents[x][y++] = c;
@@ -85,6 +85,28 @@ public class Grid {
             }
             System.out.println("");
         }
+    }
+
+
+    /**
+     * Check if word fits within grid considering coordinates given
+     *
+     * @param word       the word
+     * @param coordinate the coordinates
+     * @return true if word fits, otherwise false
+     */
+    private boolean doesFit(String word, Coordinate coordinate) {
+        // Check if word size fits grid
+        if (coordinate.y + word.length() < gridSize) {
+            // Check if all proceeding elements are underscore to prevent word overlap
+            for (int i = 0; i < word.length(); i++) {
+                if (contents[coordinate.x][coordinate.y + i] != '_') {
+                    return false;
+                }
+                return true;
+            }
+        }
+        return false;
     }
 
 
