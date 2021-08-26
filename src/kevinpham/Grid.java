@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Grid {
 
@@ -16,7 +17,11 @@ public class Grid {
     private enum Direction {
         HORIZONTAL,
         VERTICAL,
-        DIAGONAL
+        DIAGONAL,
+        HORIZONTAL_INVERSE,
+        VERTICAL_INVERSE,
+        DIAGONAL_INVERSE,
+
     }
 
     private class Coordinate {
@@ -87,12 +92,30 @@ public class Grid {
                                 contents[x++][y++] = c;
                             }
                             break;
+                        case HORIZONTAL_INVERSE:
+                            // Convert word to charArray and for each character insert into grid
+                            for (char c : word.toCharArray()) {
+                                contents[x][y--] = c;
+                            }
+                            break;
+                        case VERTICAL_INVERSE:
+                            for (char c : word.toCharArray()) {
+                                contents[x--][y] = c;
+                            }
+                            break;
+                        case DIAGONAL_INVERSE:
+                            for (char c : word.toCharArray()) {
+                                contents[x--][y--] = c;
+                            }
+                            break;
                     }
                     // After we fit a word, move onto the next word
                     break;
                 }
             }
         }
+        // Fill remaining empty spaces after adding words
+        randomFillGird();
     }
 
 
@@ -106,6 +129,23 @@ public class Grid {
                 System.out.print(contents[i][j] + " ");
             }
             System.out.println("");
+        }
+    }
+
+    /**
+     * Fill up the remaining spaces in grid with random letters
+     */
+    private void randomFillGird() {
+        String allCapLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+        for (int i = 0; i < gridSize; i++) {
+            for (int j = 0; j < gridSize; j++) {
+                if (contents[i][j] == '_') {
+                    int randomIndex = ThreadLocalRandom.current().nextInt(0, allCapLetters.length());
+
+                    contents[i][j] = allCapLetters.charAt(randomIndex);
+                }
+            }
         }
     }
 
@@ -158,6 +198,24 @@ public class Grid {
                 if (coordinate.x + wordLength > gridSize || coordinate.y + wordLength > gridSize) return false;
                 for (int i = 0; i < wordLength; i++) {
                     if (contents[coordinate.x + i][coordinate.y + i] != '_') return false;
+                }
+                break;
+            case HORIZONTAL_INVERSE:
+                if (coordinate.y < wordLength) return false;
+                for (int i = 0; i < wordLength; i++) {
+                    if (contents[coordinate.x][coordinate.y - i] != '_') return false;
+                }
+                break;
+            case VERTICAL_INVERSE:
+                if (coordinate.x < wordLength) return false;
+                for (int i = 0; i < wordLength; i++) {
+                    if (contents[coordinate.x - i][coordinate.y] != '_') return false;
+                }
+                break;
+            case DIAGONAL_INVERSE:
+                if (coordinate.x < wordLength || coordinate.y < wordLength) return false;
+                for (int i = 0; i < wordLength; i++) {
+                    if (contents[coordinate.x - i][coordinate.y - i] != '_') return false;
                 }
                 break;
         }
